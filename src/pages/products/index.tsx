@@ -61,15 +61,9 @@ const ProductPage = () => {
     fetchProducts();
   }, []);
 
-  // useEffect(() => {
-  //   setCart(localStorage.getItem("cart"));
-  // }, []);
-
   const handleCartVisibility = () => {
     setCartIsVisible(!cartIsVisible);
   };
-
-  // type NewItem = Pick<CartItem, "id">;
 
   const handleAddtoCart = (id: number) => {
     if (cart.find((item) => item.id === id)) {
@@ -81,6 +75,16 @@ const ProductPage = () => {
     } else {
       setCart([...cart, { id: id, qty: 1 }]);
     }
+  };
+
+  const handleRemovefromCart = (id: number) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  const handleUpdateQty = (id: number, newQty: number) => {
+    setCart((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, qty: newQty } : item))
+    );
   };
 
   return (
@@ -98,7 +102,10 @@ const ProductPage = () => {
           <hr className="mx-8" />
           {cart.map((item) => {
             const product = products.find((product) => product.id === item.id);
-            const total = product?.price * item.qty;
+            if (!product) return null;
+
+            const total = product.price * item.qty;
+
             return (
               <div
                 key={item.id}
@@ -107,18 +114,29 @@ const ProductPage = () => {
                 <input type="checkbox" name="" id="" />
 
                 <Image
-                  src={product?.image}
+                  src={product.image}
                   alt="image"
                   width={64}
                   height={64}
                   className="object-contain bg-gray-300"
                 />
                 <div className="w-full text-lg">
-                  <h2 className="font-semibold">{product?.title}</h2>
+                  <h2 className="font-semibold line-clamp-2">
+                    {product.title}
+                  </h2>
                   <p className=" text-gray-600">$ {total}</p>
                 </div>
-                <Counter number={item.qty} />
-                <button className="text-2xl text-gray-500">&times;</button>
+                <Counter
+                  number={item.qty}
+                  setQuantity={(newQty) => handleUpdateQty(item.id, newQty)}
+                  removeItem={() => handleRemovefromCart(item.id)}
+                />
+                <button
+                  onClick={() => handleRemovefromCart(item.id)}
+                  className="text-2xl text-gray-500"
+                >
+                  &times;
+                </button>
               </div>
             );
           })}
