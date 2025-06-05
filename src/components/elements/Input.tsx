@@ -1,12 +1,16 @@
+import { ChangeEvent } from "react";
+
 type TInput = {
   name: string;
   type: string;
   placeholder: string;
   title: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 const Input = (props: TInput) => {
-  const { name, type, placeholder, title } = props;
+  const { name, type, placeholder, title, value, onChange } = props;
   return (
     <div className="flex flex-col w-full mb-4">
       <label className="font-medium" htmlFor={name}>
@@ -18,6 +22,8 @@ const Input = (props: TInput) => {
         type={type}
         name={name}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );
